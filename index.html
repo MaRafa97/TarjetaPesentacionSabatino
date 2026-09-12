@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Tarjeta Rafa</title>
+</head>
+<body class="bg-gray-100 flex items-center justify-center
+min-h-screen">
+    <article class="bg-white p-6 rounded-2xl shadow-lg
+    max-w-sm w-full text-center">
+        <img
+        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?fit=facearea&facepad=2&w=256&h=256&q=80"
+        class="w-24 h-24 rounded-full mx-auto mb-4 border-4
+        border-indigo-100 object-cover"
+        alt="Rafa en unos 2 anios">
+
+        <h2 class="text-2xl font-bold text-gray-800">Ing. Rafael Cruz</h2>
+        <p class="text-sm text-gray-500 mb-6">Desarrollador y entusiasta de la tecnología.</p>
+
+        <button id="btnAbrir" class="bg-indigo-600 text-white px-6 py-2
+        rounded-full font-semibold hover:bg-indigo-700 
+        transition-colors duration-300">Contacta-me</button>
+    </article>
+
+
+    <div id="miModal" class="hidden fixed inset-0 bg-black 
+    bg-opacity-50 flex 
+    items-center justify-center backdrop-blur-sm 
+    transition-opacity">
+        <div class="bg-white p-8 rounded-2xl max-w-sm w-full
+        text-center shadow-2xl">
+            <h3 class="text-xl font-bold text-gray-800 
+            mb-2">Formulario de Contacto</h3>
+            <p class="text-gray-600 mb-6">Pronto conectaremos esto a una API con IA</p>
+
+            <button id="btnCerrar" 
+            class="bg-red-500 text-white px-6 py-2 
+            rounded-full font-semibold hover:bg-red-600
+            transition-colors">
+                Cerrar ventana
+            </button>
+        </div>
+    </div>
+
+
+
+    <script>
+        const botonAbrir = document.getElementById('btnAbrir');
+        const botonCerrar = document.getElementById('btnCerrar');
+        const modal = document.getElementById('miModal');
+
+        function alternarModal() {
+            modal.classList.toggle('hidden');
+        }
+
+        botonAbrir.addEventListener('click', alternarModal);
+        botonCerrar.addEventListener('click', alternarModal);
+
+        modal.addEventListener('click',function(evento)
+    {
+if(evento.target === modal)
+{
+    alternarModal();
+}
+    });
+    </script>
+</body>
+</html>
