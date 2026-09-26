@@ -1,0 +1,58 @@
+<div id="app" class="w-full max-w-md">
+        
+        <!-- SKELETON LOADER (Visualmente adaptado a la nueva tarjeta) -->
+        <div v-if="estaCargando" class="bg-slate-800 rounded-2xl shadow-2xl p-6 border border-slate-700 animate-pulse relative mt-16">
+            <!-- Círculo de imagen flotante fantasma -->
+            <div class="w-32 h-32 bg-slate-700 rounded-full mx-auto -mt-20 border-4 border-slate-800"></div>
+            <div class="h-8 bg-slate-700 w-3/4 mx-auto rounded mt-6 mb-4"></div>
+            <div class="h-4 bg-slate-700 w-1/2 mx-auto rounded mb-6"></div>
+            <div class="h-24 bg-slate-700 w-full rounded-xl mb-6"></div>
+            <div class="h-12 bg-slate-700 w-full rounded-xl"></div>
+        </div>
+
+        <!-- TARJETA FINAL CARGADA -->
+        <article v-else class="bg-slate-800 rounded-2xl shadow-2xl p-6 border border-slate-700 relative mt-16 transition-all">
+            
+            <!-- Imagen Flotante (Sale de los bordes de la tarjeta) -->
+            <div class="relative w-32 h-32 mx-auto -mt-20">
+                <img 
+                    :src="personaje.image" 
+                    :alt="personaje.name"
+                    class="w-full h-full object-cover rounded-full border-4 border-slate-800 shadow-xl"
+                >
+            </div>
+
+            <!-- Información Principal -->
+            <div class="text-center mt-4">
+                <h1 class="text-3xl font-black tracking-tight text-white mb-1">
+                    {{ personaje.name }}
+                </h1>
+                
+                <!-- Indicador de Estado Dinámico -->
+                <div class="flex items-center justify-center gap-2 text-slate-300 text-sm font-medium mb-6">
+                    <!-- AQUI USAMOS LA CLASE DINÁMICA DE VUE -->
+                    <span class="w-3 h-3 rounded-full block" :class="obtenerColorEstado(personaje.status)"></span>
+                    <span>{{ personaje.status }} - {{ personaje.species }}</span>
+                </div>
+            </div>
+
+            <!-- Detalles Extra (Caja contenedora oscura) -->
+            <div class="bg-slate-900/50 rounded-xl p-4 mb-6 text-sm">
+                <div class="mb-3">
+                    <span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Origen</span>
+                    <p class="text-slate-200">{{ personaje.origin.name }}</p>
+                </div>
+                <div>
+                    <span class="text-slate-500 block text-xs uppercase font-bold tracking-wider mb-1">Última Ubicación Conocida</span>
+                    <p class="text-slate-200">{{ personaje.location.name }}</p>
+                </div>
+            </div>
+
+            <!-- Botón de Acción con Gradiente -->
+            <button @click="obtenerPersonaje" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all shadow-lg transform hover:-translate-y-1">
+                Viajar por el Portal (Cargar Otro)
+            </button>
+            
+        </article>
+
+    </div>

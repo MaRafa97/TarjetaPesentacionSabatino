@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+</head>
+<body class="bg-gray-100 flex items-center justify-center 
+min-h-screen">
+
+<!-- Contenedor de mi aplicacion (Vue) -->
+ <div id="app">
+    <!-- TARJETA DE PERFIL-->
+    <article class="bg-white p-6 rounded-2xl shadow-lg max-w-sm
+         w-full text-center relative z-10">
+        <!-- Imagen -->
+         <img class="w-24 h-24 rounded-full mx-auto mb-4
+         border-4 border-indigo-100 object-cover" 
+         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?fit=facearea&facepad=2&w=256&h=256&q=80"
+         alt="casi un desarrollador">
+        <!--Nombre-->
+        <h2 class="text-2xl font-bold text-gray-800">
+            {{nombreUsuario}}
+        </h2>
+        <!-- Rol, descripcion -->
+        <p class="text-sm text-gray-500 mb-6">
+            {{ rolUsuario }}
+        </p>
+        <!-- Boton -->
+         <button 
+         class="bg-indigo-600 text-white px-6 py-2
+         rounded-full font-semibold hover:bg-indigo-700
+         transition-colors"
+         @click="mostrarModal = true">
+            Contacta-me
+         </button>
+    </article>
+    
+<!-- modal -->
+ <div v-if="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 flex
+ items-center justify-center backdrop-blur-sm 
+ transition-opacity z-50">
+    <!-- Aqui adentro va el modal -->
+<div class="bg-white p-8 rounded-2xl max-w-sm w-full
+        text-center shadow-2xl">
+            <h3 class="text-xl font-bold text-gray-800 
+            mb-2">Formulario de Contacto</h3>
+            <p class="text-gray-600 mb-6">Mensaje para {{ nombreUsuario }}</p>
+
+            <button @click="mostrarModal = false" 
+            class="bg-red-500 text-white px-6 py-2 
+            rounded-full font-semibold hover:bg-red-600
+            transition-colors">
+                Cerrar ventana
+            </button>
+        </div>
+
+ </div>
+
+ </div>
+    
+
+ <!--Logica vue js-->
+ <script>
+    // Extraer funciones de Vue
+    const { createApp, ref } = Vue;
+
+    createApp({
+        // funcion setup para el estado reactivo
+        setup() {
+            const nombreUsuario = ref('Ing. Rafael Cruz');
+            const rolUsuario = ref('Casi desarrollador fullstack');
+            const mostrarModal = ref(false);
+
+            //Retornar las variables al doom
+            return {
+                nombreUsuario,
+                rolUsuario,
+                mostrarModal
+            }
+        }
+    }).mount('#app');
+ </script>
+</body>
+</html>
+
