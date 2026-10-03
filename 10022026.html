@@ -1,0 +1,42 @@
+<!-- Zona de Resultados (Scrollable) -->
+        <main class="flex-1 overflow-y-auto p-6 flex flex-col">
+            
+            <div v-if="!respuestaIA && !estaCargando" class="m-auto text-zinc-500 text-center max-w-sm">
+                <p class="text-4xl mb-4">:)</p>
+                <p>Describe tu proyecto de diseño gráfico y el motor de Google Gemini generará tu dirección de arte.</p>
+            </div>
+
+            <!-- Loader Visual -->
+            <div v-if="estaCargando" class="flex flex-col items-center justify-center my-auto space-y-4">
+                <div class="w-12 h-12 border-4 border-zinc-700 border-t-emerald-500 rounded-full animate-spin"></div>
+                <span class="text-emerald-400 text-sm font-medium tracking-widest animate-pulse">EVALUANDO CONCEPTOS...</span>
+            </div>
+
+            <!-- Contenedor de Respuesta de la IA -->
+            <div v-if="respuestaIA && !estaCargando" class="bg-zinc-700/50 p-6 rounded-xl border border-zinc-600 shadow-inner text-zinc-200 whitespace-pre-wrap leading-relaxed">
+                {{ respuestaIA }}
+            </div>
+
+        </main>
+
+        <!-- Zona de Input (Controles) -->
+        <footer class="p-4 bg-zinc-900 border-t border-zinc-700">
+            <div class="flex gap-2">
+                <input 
+                    v-model="promptUsuario" 
+                    @keyup.enter="consultarIA"
+                    :disabled="estaCargando"
+                    type="text" 
+                    placeholder="Ej. Diseño UI para una app bancaria futurista..."
+                    class="flex-1 bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                >
+                <button 
+                    @click="consultarIA" 
+                    :disabled="estaCargando || !promptUsuario.trim()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[100px]"
+                >
+                    <span v-if="!estaCargando">Generar</span>
+                    <span v-else class="text-xs">...</span>
+                </button>
+            </div>
+        </footer>
