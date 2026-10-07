@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analista Multiversal - Datos + IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 font-sans text-slate-100">
+    
+    <div id="app" class="w-full max-w-3xl">
+        <!-- Tarjeta Principal (UI) -->
+        <article class="bg-slate-800 rounded-3xl shadow-2xl overflow-hidden border border-slate-700 grid md:grid-cols-2 gap-0 relative">
+            
+            <!-- SECCIÓN IZQUIERDA: API REST (Rick & Morty) -->
+            <div class="p-8 flex flex-col justify-center items-center bg-slate-800/50 relative">
+                
+                <!-- Skeleton Izquierdo -->
+                <div v-if="estaCargando" class="animate-pulse flex flex-col items-center w-full">
+                    <div class="w-40 h-40 bg-slate-700 rounded-full border-4 border-slate-600 mb-6"></div>
+                    <div class="h-6 bg-slate-700 w-3/4 rounded mb-4"></div>
+                    <div class="h-4 bg-slate-700 w-1/2 rounded"></div>
+                </div>
+
+                <!-- Datos Reales -->
+                <div v-else-if="personaje" class="text-center w-full">
+                    <div class="relative w-40 h-40 mx-auto mb-6">
+                        <img 
+                            :src="personaje.image" 
+                            :alt="personaje.name"
+                            class="w-full h-full object-cover rounded-full border-4 border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+                        >
+                        <!-- Indicador de Estado Dinámico -->
+                        <span 
+                            class="absolute bottom-2 right-2 w-6 h-6 rounded-full border-4 border-slate-800"
+                            :class="personaje.status === 'Alive' ? 'bg-green-500' : (personaje.status === 'Dead' ? 'bg-red-500' : 'bg-gray-400')"
+                        ></span>
+                    </div>
+                    <h1 class="text-3xl font-black tracking-tight text-white mb-2">{{ personaje.name }}</h1>
+                    <p class="text-slate-400 font-medium uppercase tracking-widest text-sm mb-1">{{ personaje.species }}</p>
+                    <p class="text-slate-500 text-xs">{{ personaje.origin.name }}</p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DERECHA: API GENERATIVA (Google Gemini) -->
+            <div class="p-8 border-t md:border-t-0 md:border-l border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 flex flex-col">
+                
+                <h2 class="text-lg font-bold text-emerald-400 flex items-center gap-2 mb-6">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5H5.5L12 6.5z"/></svg>
+                    Análisis de Dirección de Arte
+                </h2>
+
+                <!-- Skeleton Derecho -->
+                <div v-if="estaCargando" class="animate-pulse space-y-4 flex-1">
+                    <div class="h-4 bg-slate-700 w-full rounded"></div>
+                    <div class="h-4 bg-slate-700 w-5/6 rounded"></div>
+                    <div class="h-4 bg-slate-700 w-4/6 rounded"></div>
+                </div>
+
+                <!-- Respuesta de IA -->
+                <div v-else-if="analisisIA" class="flex-1 text-slate-300 text-sm leading-relaxed whitespace-pre-wrap overflow-y-auto pr-2 custom-scrollbar">
+                    {{ analisisIA }}
+                </div>
+
+                <!-- Botón de Acción -->
+                <button 
+                    @click="ejecutarPipeline" 
+                    :disabled="estaCargando"
+                    class="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
+                >
+                    <span v-if="!estaCargando">Escanear Siguiente Entidad</span>
+                    <span v-else>Sincronizando APIs...</span>
+                </button>
+            </div>
+        </article>
+    </div>
+
+    <!-- Script de Orquestación -->
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const personaje = ref(null);
+                const analisisIA = ref('');
+                const estaCargando = ref(false);
+                
+                // Llave nativa validada para AI Studio (Cabecera x-goog-api-key)
+                const GEMINI_API_KEY = '';
+
+                // Función Principal Orquestadora
+                const ejecutarPipeline = async () => {
+                    if (!GEMINI_API_KEY) {
+                        alert("Falta configurar la API Key de Gemini.");
+                        return;
+                    }
+
+                    estaCargando.value = true;
+                    analisisIA.value = '';
+                    
+                    const idAleatorio = Math.floor(Math.random() * 826) + 1;
+
+                    try {
+                        // --- FASE 1: OBTENCIÓN DE DATOS ESTRUCTURADOS (REST) ---
+                        const resRickMorty = await fetch(`https://rickandmortyapi.com/api/character/${idAleatorio}`);
+                        if (!resRickMorty.ok) throw new Error("Fallo en API origen");
+                        
+                        const datosPersonaje = await resRickMorty.json();
+                        personaje.value = datosPersonaje;
+
+                        // --- FASE 2: CONSTRUCCIÓN DEL PROMPT DINÁMICO ---
+                        // Cruzamos los datos del JSON anterior con lenguaje natural
+                        const promptDinamico = `
+                            Acabo de renderizar a un personaje llamado ${datosPersonaje.name}.
+                            Es de la especie ${datosPersonaje.species}.
+                            Su origen es ${datosPersonaje.origin.name}.
+                            Su estado actual de vida es: ${datosPersonaje.status}.
+                            
+                            Como Director de Arte, dame exactamente:
+                            1. Una paleta de 3 colores en Hexadecimal que representen su vibra narrativa.
+                            2. Un concepto visual de una línea para rediseñar su vestuario.
+                        `;
+
+                        // --- FASE 3: INFERENCIA NEURONAL (GEMINI) ---
+                        const urlGemini = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
+                        
+                        const payload = {
+                            systemInstruction: {
+                                parts: [{ text: "Eres un director de arte sci-fi. Responde corto, directo y usando viñetas." }]
+                            },
+                            contents: [{
+                                parts: [{ text: promptDinamico }]
+                            }],
+                            generationConfig: { temperature: 0.8 }
+                        };
+
+                        const resGemini = await fetch(urlGemini, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-goog-api-key': GEMINI_API_KEY
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!resGemini.ok) throw new Error("Fallo en API IA");
+
+                        const datosIA = await resGemini.json();
+                        analisisIA.value = datosIA.candidates[0].content.parts[0].text;
+
+                    } catch (error) {
+                        console.error("Error en Pipeline:", error);
+                        analisisIA.value = "Interferencia detectada en la transmisión multiversal. Vuelve a intentar.";
+                    } finally {
+                        estaCargando.value = false;
+                    }
+                };
+
+                onMounted(() => {
+                    ejecutarPipeline();
+                });
+
+                return { personaje, analisisIA, estaCargando, ejecutarPipeline }
+            }
+        }).mount('#app');
+    </script>
+    <style>
+        /* Estilo sutil para que el texto de IA no rompa el diseño si es muy largo */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+    </style>
+</body>
+</html>
